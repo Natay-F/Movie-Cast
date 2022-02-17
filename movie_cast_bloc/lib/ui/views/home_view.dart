@@ -1,57 +1,68 @@
 import 'package:flutter/material.dart';
-import 'package:movie_cast_stacked/ui/shared/ui_helpers.dart';
-import 'package:stacked/stacked.dart';
-
-import './home_view_model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:movie_cast_bloc/blocs/home/home_bloc.dart';
+import 'package:movie_cast_bloc/models/director.dart';
+import 'package:movie_cast_bloc/services/firebase.dart';
+import 'package:movie_cast_bloc/ui/shared/ui_helpers.dart';
+import 'package:movie_cast_bloc/ui/views/personnel_view.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return ViewModelBuilder<HomeViewModel>.reactive(
-      viewModelBuilder: () => HomeViewModel(),
-      onModelReady: (HomeViewModel model) async {
-        await model.init();
-      },
-      builder: (
-        BuildContext context,
-        HomeViewModel model,
-        Widget? child,
-      ) {
-        return Scaffold(
-            body: FutureBuilder(
-          future: model.getDirectors(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return Container(
-                height: screenHeight(context),
-                color: Colors.yellow,
-                child: GridView.builder(
-                  itemCount: model.directorsList.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3),
-                  itemBuilder: (context, index) => InkWell(
-                    onTap: () =>
-                        model.onTap(model.directorsList[index].documentId),
-                    child: Card(
-                      color: Colors.amber,
-                      child: Center(
-                        child: Text(model.directorsList[index].name,
-                            style: Theme.of(context).textTheme.headline5),
-                      ),
+    FirebaseService _firebaseService = FirebaseService();
+
+    return Scaffold(
+      body: BlocBuilder<HomeBloc, HomeState>(
+        builder: (context, state) {
+          if (state is DirectorsLoading) {
+            return IntroWidget();
+          }
+          if (state is DirectorsLoaded) {
+            return Container(
+              height: screenHeight(context),
+              color: Colors.yellow,
+              child: GridView.builder(
+                itemCount: state.directors.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3),
+                itemBuilder: (context, index) => InkWell(
+                  onTap: () {
+                    context.read<HomeBloc>().add(SelectDirector(
+                        directorId: state.directors[index].documentId));
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PersonnelView(),
+                        ));
+                  },
+                  child: Card(
+                    color: Colors.amber,
+                    child: Center(
+                      child: Text(state.directors[index].name,
+                          style: Theme.of(context).textTheme.headline5),
                     ),
                   ),
                 ),
-              );
-            } else {
-              return const IntroWidget();
-            }
-          },
-        ));
-      },
+              ),
+            );
+          } else {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
+      ),
     );
   }
+
+  // getDirectors(FirebaseService _firebaseService) async {
+  //   List<Director> newdirectorsList = await _firebaseService.getDirector();
+  //   if (newdirectorsList != null && newdirectorsList.isNotEmpty) {
+  //     return newdirectorsList;
+  //   }
+  // }
 }
 
 class IntroWidget extends StatelessWidget {

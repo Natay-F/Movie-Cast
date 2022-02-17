@@ -31,6 +31,8 @@ class NewPersonnelViewModel extends FormViewModel {
       setValidationMessage("You need to set a Name");
     } else if (costValue == null || costValue!.isEmpty) {
       setValidationMessage("You need to set a Cost");
+    } else if (double.tryParse(costValue!) == null) {
+      setValidationMessage("Cost needs to be a number");
     } else if (descriptionValue == null || descriptionValue!.isEmpty) {
       setValidationMessage("You need to set a description");
     } else {

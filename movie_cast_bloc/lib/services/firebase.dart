@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
-import 'package:movie_cast_stacked/models/director.dart';
-import 'package:movie_cast_stacked/models/personnel.dart';
+import '/models/director.dart';
+import '/models/personnel.dart';
 
 class FirebaseService {
   final CollectionReference _personnelReference =
@@ -15,7 +15,7 @@ class FirebaseService {
   final StreamController<List<Personnel>> _personnelStreamController =
       StreamController.broadcast();
 
-  Stream listenToPersonnel() {
+  Stream<List<Personnel>> listenToPersonnel() {
     // Register the personnel changes
     _personnelReference
         .where("isAvailable", isEqualTo: true)
@@ -116,7 +116,7 @@ class FirebaseService {
     }
   }
 
-  getDirector() async {
+  getDirectors() async {
     try {
       var _director = await _directorReference.get();
       if (_director.docs.isNotEmpty) {
