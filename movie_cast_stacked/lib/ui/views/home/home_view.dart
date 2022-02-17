@@ -21,28 +21,28 @@ class HomeView extends StatelessWidget {
       ) {
         return Scaffold(
             body: FutureBuilder(
-          future: Future.delayed(const Duration(seconds: 3), () => "Data"),
+          future: model.getDirectors(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return Container(
                 height: screenHeight(context),
                 color: Colors.yellow,
                 child: GridView.builder(
-                    itemCount: model.directorsList.length,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3),
-                    itemBuilder: (context, index) => InkWell(
-                          onTap: () => model
-                              .onTap(model.directorsList[index].documentId),
-                          child: Card(
-                            color: Colors.amber,
-                            child: Center(
-                              child: Text(model.directorsList[index].name,
-                                  style: Theme.of(context).textTheme.headline5),
-                            ),
-                          ),
-                        )),
+                  itemCount: model.directorsList.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3),
+                  itemBuilder: (context, index) => InkWell(
+                    onTap: () =>
+                        model.onTap(model.directorsList[index].documentId),
+                    child: Card(
+                      color: Colors.amber,
+                      child: Center(
+                        child: Text(model.directorsList[index].name,
+                            style: Theme.of(context).textTheme.headline5),
+                      ),
+                    ),
+                  ),
+                ),
               );
             } else {
               return const IntroWidget();

@@ -45,6 +45,7 @@ class RosterViewModel extends CustomBaseViewModel {
   Future<void> getRoster() async {
     setBusy(true);
     _personnelInRoster = [];
+    print(_directorService.directorId);
     var data = await _firebaseService.getRoster(_directorService.directorId);
     if (data is List) {
       for (var element in data) {

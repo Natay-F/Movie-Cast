@@ -8,19 +8,22 @@ import 'package:stacked_services/stacked_services.dart';
 
 class HomeViewModel extends CustomBaseViewModel {
   final FirebaseService _firebaseService = locator<FirebaseService>();
-  final DirectorService _postsService = locator<DirectorService>();
+  final DirectorService _directorService = locator<DirectorService>();
   final NavigationService _navigationService = locator<NavigationService>();
   List<Director> directorsList = [];
 
-  Future<void> init() async {
+  Future<void> init() async {}
+
+  getDirectors() async {
     List<Director> newdirectorsList = await _firebaseService.getDirector();
     if (newdirectorsList != null && newdirectorsList.isNotEmpty) {
       directorsList = newdirectorsList;
     }
+    return directorsList;
   }
 
   onTap(String directorsId) {
-    _postsService.setDirectorId = directorsId;
+    _directorService.setDirectorId = directorsId;
     _navigationService.replaceWith(Routes.personnelListView);
   }
 }

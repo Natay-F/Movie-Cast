@@ -80,12 +80,12 @@ class FirebaseService {
         Director director =
             Director.fromJson(_director.data() as Map<String, dynamic>);
 
-        var personnelList = await _personnelReference
-            .where("documentId", whereIn: director.roster)
-            .get();
+        var personnelList = await _personnelReference.get();
         if (personnelList != null && personnelList.docs.isNotEmpty) {
-          return List.from(personnelList.docs.map(
-              (e) => Personnel.fromJson(e.data() as Map<String, dynamic>)));
+          return List.from(personnelList.docs
+              .map((e) => Personnel.fromJson(e.data() as Map<String, dynamic>))
+              .where(
+                  (element) => director.roster.contains(element.documentId)));
         }
       }
     } catch (e) {
